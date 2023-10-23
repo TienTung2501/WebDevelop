@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing.Printing;
 using webtemplate.Data;
 using webtemplate.Models;
 
@@ -15,29 +16,42 @@ namespace webtemplate.Controllers
         {
             db=context;
         }
-        public IActionResult Index()//int? mid
+        public IActionResult Index(int page ,int pageSize)
         {
-
-            /* if (mid == null)
-             {
-                 var learners = db.Learners.Include(m=>m.Major).ToList();
-                 return View(learners);
-             }
-             else
-             {
-                 var learners=db.Learners.Where(l=>l.MajorID==mid).Include(m=>m.Major).ToList();
-                 return View(learners);
-             }*/
+            int sizes = 5; // số phần tử của 1 trang
             var learners = db.Learners.Include(m => m.Major).ToList();
+            ViewBag.PageSize = sizes;// truyền page size sang  sang view truyền vào thẻ a để thực hiện sự kiện load.
+            ViewBag.pageCount = (int)Math.Ceiling((double)learners.Count / sizes);// tổng số trang
+      
             return View(learners);
+        }
 
-        } 
+        public IActionResult GetPage(int page, int pageSize)
+        {
+            var totalRecords = db.Learners.Include(m => m.Major).Count();
+            var pageCount = (int)Math.Ceiling((double)totalRecords / pageSize);
+
+            if (page < 1)
+            {
+                page = 1;
+            }
+            else if (page > pageCount)
+            {
+                page = pageCount;
+            }
+
+            var learners = db.Learners.Include(m => m.Major)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return PartialView("LearnerTable", learners);
+        }
         public IActionResult LearnerByMajorID(int mid)
         {
         
-                var learners = db.Learners.Where(l => l.MajorID == mid).Include(m => m.Major).ToList();
+                var learners = db.Learners.Where(l => l.MajorID == mid).Include(m => m.Major).ToList();// include để join và lấy name major theo thằng major
                 return PartialView("LearnerTable", learners);
-           
         }
 
         public IActionResult Create() {
