@@ -10,31 +10,35 @@
     @await Component.InvokeAsync("Major")
     <div id="content">
         <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Mã</th>
-                <th>Tên</th> 
-                <th>Họ</th>
-                <th>Ngành</th>
-                <th>Ngày nhập học</th>
-                <th>Chức Năng</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach(var s in Model)
-            {
+            @*  khi ta có sự kiện click vào phân trang thì sẽ gọi ra patialview còn  thăng table này *@
+            <thead>
                 <tr>
-                    <td>@s.LearnerID</td>
-                    <td>@s.FirstMidName</td>
-                    <td>@s.LastName</td>
-                    <td>@s.Major.MajorName</td>
-                    <td>@s.EnrollmentDate</td>
-                    <td><a asp-action="Edit" asp-route-id="@s.LearnerID">Edit</a>|
-                        <a asp-action="Delete" asp-route-id="@s.LearnerID">Delete</a></td>
+                    <th>Mã</th>
+                    <th>Tên</th>
+                    <th>Họ</th>
+                    <th>Ngành</th>
+                    <th>Ngày nhập học</th>
+                    <th>Chức Năng</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var s in Model)
+                {
+                    <tr>
+                        <td>@s.LearnerID</td>
+                        <td>@s.FirstMidName</td>
+                        <td>@s.LastName</td>
+                        <td>@s.Major.MajorName</td>
+                        <td>@s.EnrollmentDate</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@s.LearnerID">Edit</a>|
+                            <a asp-action="Delete" asp-route-id="@s.LearnerID">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
     </div>
         <div class="text-center">
             @if (ViewBag.pageCount > 1)
@@ -42,9 +46,9 @@
                 <ul class="pagination">
                     @for (int i = 1; i <= ViewBag.pageCount; i++)
                     {
-                        <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
-                            <a class="page-link" onclick="loadPage(@i, @ViewBag.PageSize)" style="cursor:pointer">@i</a>
-                        </li>
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link" onclick="loadPage(@i, @ViewBag.PageSize)" style="cursor:pointer">@i</a>
+                     </li>
                     }
                 </ul>
             }
@@ -79,6 +83,8 @@
                 data: { page: page, pageSize: pageSize },
                 success: function (data) {
                     $('#content').html(data);
+
+                    
                 },
                 error: function () {
                     alert('Có lỗi xảy ra khi tải trang.');

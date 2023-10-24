@@ -1,4 +1,8 @@
-﻿@model IEnumerable<Learner>
+﻿@{
+    ViewBag.CurrentPage = ViewBag.CurrentPage; // Truyền giá trị ViewBag.CurrentPage vào PartialView
+}
+
+@model IEnumerable<Learner>
 <table class="table table-striped">
     <thead>
         <tr>
@@ -27,3 +31,4 @@
         }
     </tbody>
 </table>
+

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
@@ -16,21 +17,21 @@ namespace webtemplate.Controllers
         {
             db=context;
         }
-        public IActionResult Index(int page ,int pageSize)
+        public IActionResult Index(int currentpage)
         {
             int sizes = 5; // số phần tử của 1 trang
             var learners = db.Learners.Include(m => m.Major).ToList();
             ViewBag.PageSize = sizes;// truyền page size sang  sang view truyền vào thẻ a để thực hiện sự kiện load.
-            ViewBag.pageCount = (int)Math.Ceiling((double)learners.Count / sizes);// tổng số trang
-      
+            ViewBag.pageCount = (int)Math.Ceiling((double)learners.Count / sizes);// tổng số trang       
+            learners =learners.Take(sizes).ToList();
             return View(learners);
         }
 
         public IActionResult GetPage(int page, int pageSize)
         {
+            // lý do không cập nhật được currentpage ở đây vì nó trả kêt quả ra parialview
             var totalRecords = db.Learners.Include(m => m.Major).Count();
             var pageCount = (int)Math.Ceiling((double)totalRecords / pageSize);
-
             if (page < 1)
             {
                 page = 1;
@@ -39,12 +40,11 @@ namespace webtemplate.Controllers
             {
                 page = pageCount;
             }
-
             var learners = db.Learners.Include(m => m.Major)
-                .Skip((page - 1) * pageSize)
+                .Skip((page - 1) * pageSize)// bỏ qua những thằng từ page trước lấy đủ 5 thằng
                 .Take(pageSize)
                 .ToList();
-
+            
             return PartialView("LearnerTable", learners);
         }
         public IActionResult LearnerByMajorID(int mid)
