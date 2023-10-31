@@ -17,7 +17,7 @@ namespace webtemplate.Controllers
         {
             db=context;
         }
-        public IActionResult Index(int currentpage)
+        public IActionResult Index()
         {
             int sizes = 5; // số phần tử của 1 trang
             var learners = db.Learners.Include(m => m.Major).ToList();
